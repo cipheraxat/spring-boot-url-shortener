@@ -1,0 +1,45 @@
+# URL Shortener API Tests
+# Run with: httpie --session=./session.json < api-requests.http
+
+### Shorten URL with expiration
+POST http://localhost:8080/api/v1/data/shorten
+Content-Type: application/json
+
+{
+  "longUrl": "https://www.example.com/very/long/url/path",
+  "expiresAt": "2026-12-31T23:59:59Z"
+}
+
+### Shorten URL without expiration
+POST http://localhost:8080/api/v1/data/shorten
+Content-Type: application/json
+
+{
+  "longUrl": "https://www.google.com/search?q=url+shortener"
+}
+
+### Redirect to original URL (replace {shortUrl} with actual short URL)
+GET http://localhost:8080/api/v1/{shortUrl}
+Accept: application/json
+
+### Get analytics for short URL (replace {shortUrl} with actual short URL)
+GET http://localhost:8080/api/v1/analytics/{shortUrl}
+Accept: application/json
+
+### Health check
+GET http://localhost:8080/actuator/health
+
+### API Documentation
+GET http://localhost:8080/swagger-ui.html
+
+### Application Info
+GET http://localhost:8080/actuator/info
+
+### Application Metrics
+GET http://localhost:8080/actuator/metrics
+
+### Specific Metric (JVM Memory)
+GET http://localhost:8080/actuator/metrics/jvm.memory.used
+
+### Health Component (Database)
+GET http://localhost:8080/actuator/health/db

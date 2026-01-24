@@ -1,0 +1,62 @@
+{
+  "shorten_url": {
+    "method": "POST",
+    "url": "http://localhost:8080/api/v1/data/shorten",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "longUrl": "https://www.example.com/very/long/url/path",
+      "expiresAt": "2026-12-31T23:59:59Z"
+    }
+  },
+  "shorten_url_simple": {
+    "method": "POST",
+    "url": "http://localhost:8080/api/v1/data/shorten",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "longUrl": "https://www.google.com/search?q=url+shortener"
+    }
+  },
+  "redirect_url": {
+    "method": "GET",
+    "url": "http://localhost:8080/api/v1/{shortUrl}",
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "get_analytics": {
+    "method": "GET",
+    "url": "http://localhost:8080/api/v1/analytics/{shortUrl}",
+    "headers": {
+      "Accept": "application/json"
+    }
+  },
+  "health_check": {
+    "method": "GET",
+    "url": "http://localhost:8080/actuator/health"
+  },
+  "api_docs": {
+    "method": "GET",
+    "url": "http://localhost:8080/swagger-ui.html"
+  },
+  "app_info": {
+    "method": "GET",
+    "url": "http://localhost:8080/actuator/info"
+  },
+  "app_metrics": {
+    "method": "GET",
+    "url": "http://localhost:8080/actuator/metrics"
+  },
+  "specific_metric": {
+    "method": "GET",
+    "url": "http://localhost:8080/actuator/metrics/jvm.memory.used"
+  },
+  "health_component": {
+    "method": "GET",
+    "url": "http://localhost:8080/actuator/health/db"
+  }
+}</content>
+<parameter name="filePath">/Users/Admin/Developer/Projects/url-shortener/api-requests.json

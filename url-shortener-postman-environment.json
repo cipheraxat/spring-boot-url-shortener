@@ -1,0 +1,31 @@
+{
+  "id": "url-shortener-env",
+  "name": "URL Shortener Environment",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "description": "Base URL for the URL Shortener service",
+      "enabled": true
+    },
+    {
+      "key": "shortUrl",
+      "value": "abc123",
+      "description": "Short URL identifier - update with actual short URL from API response",
+      "enabled": true
+    },
+    {
+      "key": "metricName",
+      "value": "jvm.memory.used",
+      "description": "Metric name for actuator metrics endpoint (e.g., jvm.memory.used, http.server.requests)",
+      "enabled": true
+    },
+    {
+      "key": "component",
+      "value": "db",
+      "description": "Health component name (e.g., db, redis, diskSpace)",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

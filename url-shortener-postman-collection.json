@@ -1,0 +1,244 @@
+{
+  "info": {
+    "name": "URL Shortener API",
+    "description": "API collection for testing the URL Shortener service built with Spring Boot",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "url-shortener-api"
+  },
+  "item": [
+    {
+      "name": "Shorten URL with Expiration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"longUrl\": \"https://www.example.com/very/long/url/path\",\n  \"expiresAt\": \"2026-12-31T23:59:59Z\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/data/shorten",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "data",
+            "shorten"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shorten URL (Simple)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"longUrl\": \"https://www.google.com/search?q=url+shortener\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/data/shorten",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "data",
+            "shorten"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Redirect to Original URL",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/{{shortUrl}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "{{shortUrl}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get URL Analytics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/analytics/{{shortUrl}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "analytics",
+            "{{shortUrl}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "actuator",
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "API Documentation",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/swagger-ui.html",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "swagger-ui.html"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Application Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/info",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "actuator",
+            "info"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Application Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/metrics",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "actuator",
+            "metrics"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Specific Metric",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/metrics/{{metricName}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "actuator",
+            "metrics",
+            "{{metricName}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Health Component",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/actuator/health/{{component}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "actuator",
+            "health",
+            "{{component}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "shortUrl",
+      "value": "abc123",
+      "type": "string",
+      "description": "Short URL identifier (update this with actual short URL from shorten response)"
+    }
+  ]
+}
