@@ -1,5 +1,6 @@
 package com.urlshortener.service;
 
+import com.urlshortener.entity.RedirectType;
 import com.urlshortener.entity.Url;
 import com.urlshortener.repository.UrlRepository;
 import com.urlshortener.util.Base62Encoder;
@@ -24,7 +25,7 @@ public class UrlService {
     }
 
     @Transactional
-    public Url shortenUrl(String longUrl, OffsetDateTime expiresAt) {
+    public Url shortenUrl(String longUrl, OffsetDateTime expiresAt, RedirectType redirectType) {
         // Check if URL already exists
         Optional<Url> existingUrl = urlRepository.findByLongUrl(longUrl);
         if (existingUrl.isPresent()) {
@@ -35,6 +36,7 @@ public class UrlService {
         Url url = new Url();
         url.setLongUrl(longUrl);
         url.setExpiresAt(expiresAt);
+        url.setRedirectType(redirectType);
 
         // Save to get ID
         Url savedUrl = urlRepository.save(url);

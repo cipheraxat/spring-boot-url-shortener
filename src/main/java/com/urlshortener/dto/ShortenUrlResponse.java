@@ -1,5 +1,6 @@
 package com.urlshortener.dto;
 
+import com.urlshortener.entity.RedirectType;
 import java.time.OffsetDateTime;
 
 public class ShortenUrlResponse {
@@ -8,14 +9,16 @@ public class ShortenUrlResponse {
     private String longUrl;
     private OffsetDateTime expiresAt;
     private OffsetDateTime createdAt;
+    private RedirectType redirectType;
 
     public ShortenUrlResponse() {}
 
-    public ShortenUrlResponse(String shortUrl, String longUrl, OffsetDateTime expiresAt, OffsetDateTime createdAt) {
+    public ShortenUrlResponse(String shortUrl, String longUrl, OffsetDateTime expiresAt, OffsetDateTime createdAt, RedirectType redirectType) {
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.expiresAt = expiresAt;
         this.createdAt = createdAt;
+        this.redirectType = redirectType;
     }
 
     public String getShortUrl() {
@@ -48,5 +51,13 @@ public class ShortenUrlResponse {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public RedirectType getRedirectType() {
+        return redirectType;
+    }
+
+    public void setRedirectType(RedirectType redirectType) {
+        this.redirectType = redirectType;
     }
 }

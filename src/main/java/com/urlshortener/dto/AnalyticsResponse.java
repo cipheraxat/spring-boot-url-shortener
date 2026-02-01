@@ -1,5 +1,7 @@
 package com.urlshortener.dto;
 
+import com.urlshortener.entity.RedirectType;
+
 import java.time.OffsetDateTime;
 
 public class AnalyticsResponse {
@@ -9,16 +11,18 @@ public class AnalyticsResponse {
     private Long clickCount;
     private OffsetDateTime createdAt;
     private OffsetDateTime expiresAt;
+    private RedirectType redirectType;
 
     public AnalyticsResponse() {}
 
     public AnalyticsResponse(String shortUrl, String longUrl, Long clickCount,
-                           OffsetDateTime createdAt, OffsetDateTime expiresAt) {
+                           OffsetDateTime createdAt, OffsetDateTime expiresAt, RedirectType redirectType) {
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.clickCount = clickCount;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
+        this.redirectType = redirectType;
     }
 
     public String getShortUrl() {
@@ -59,5 +63,13 @@ public class AnalyticsResponse {
 
     public void setExpiresAt(OffsetDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public RedirectType getRedirectType() {
+        return redirectType;
+    }
+
+    public void setRedirectType(RedirectType redirectType) {
+        this.redirectType = redirectType;
     }
 }

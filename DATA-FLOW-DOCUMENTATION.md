@@ -180,13 +180,15 @@ private String longUrl;
 │  ▸ INPUT (Raw JSON):                                            │
 │    {                                                            │
 │      "longUrl": "https://example.com/path",                     │
-│      "expiresAt": "2026-12-31T23:59:59Z"                        │
+│      "expiresAt": "2026-12-31T23:59:59Z",                       │
+│      "redirectType": "TEMPORARY"                                │
 │    }                                                            │
 │                                                                  │
 │  ▸ OUTPUT (Java Object):                                        │
 │    ShortenUrlRequest {                                          │
 │      longUrl: String = "https://example.com/path"               │
 │      expiresAt: OffsetDateTime = 2026-12-31T23:59:59Z           │
+│      redirectType: RedirectType = TEMPORARY                    │
 │    }                                                            │
 │                                                                  │
 │  ▸ VALIDATION:                                                  │
@@ -206,7 +208,8 @@ private String longUrl;
 ├─────────────────────────────────────────────────────────────────┤
 │  ▸ INPUT PARAMETERS:                                            │
 │    ├─ longUrl: String = "https://example.com/path"              │
-│    └─ expiresAt: OffsetDateTime = 2026-12-31T23:59:59Z          │
+│    ├─ expiresAt: OffsetDateTime = 2026-12-31T23:59:59Z          │
+│    └─ redirectType: RedirectType = TEMPORARY                   │
 │                                                                  │
 │  ▸ PROCESSING LOGIC:                                            │
 │    │                                                            │
@@ -286,11 +289,14 @@ Position: 36-61  →  'A'-'Z'  (uppercase)
 │      clickCount: 0                                              │
 │      expiresAt: 2026-12-31T23:59:59Z                            │
 │      createdAt: null → 2026-02-01T10:30:00Z (auto-set)          │
+│      redirectType: TEMPORARY                                   │
 │    }                                                            │
 │                                                                  │
 │  ▸ SQL GENERATED:                                               │
-│    INSERT INTO urls (long_url, expires_at, click_count)         │
-│    VALUES ('https://example.com/path', '2026-12-31', 0);        │
+│    INSERT INTO urls (long_url, expires_at, click_count,        │
+│                       redirect_type)                           │
+│    VALUES ('https://example.com/path', '2026-12-31', 0,         │
+│            'TEMPORARY');                                        │
 │                                                                  │
 │    UPDATE urls SET short_url = '00003d3' WHERE id = 12345;      │
 │                                                                  │
@@ -316,6 +322,7 @@ Position: 36-61  →  'A'-'Z'  (uppercase)
 │      clickCount: 0                                              │
 │      expiresAt: 2026-12-31T23:59:59Z                            │
 │      createdAt: 2026-02-01T10:30:00Z                            │
+│      redirectType: TEMPORARY                                   │
 │    }                                                            │
 │                                                                  │
 │  ▸ OUTPUT (ShortenUrlResponse DTO):                             │
@@ -324,6 +331,7 @@ Position: 36-61  →  'A'-'Z'  (uppercase)
 │      longUrl: "https://example.com/path"                        │
 │      expiresAt: 2026-12-31T23:59:59Z                            │
 │      createdAt: 2026-02-01T10:30:00Z                            │
+│      redirectType: TEMPORARY                                   │
 │    }                                                            │
 │                                                                  │
 │  ▸ NOTE: id and clickCount are NOT exposed to client            │
@@ -343,7 +351,8 @@ Content-Type: application/json
     "shortUrl": "00003d3",
     "longUrl": "https://example.com/very/long/path",
     "expiresAt": "2026-12-31T23:59:59Z",
-    "createdAt": "2026-02-01T10:30:00Z"
+    "createdAt": "2026-02-01T10:30:00Z",
+    "redirectType": "TEMPORARY"
 }
 ```
 
@@ -428,11 +437,13 @@ Host: localhost:8080
 │                                                                  │
 │  ▸ PROCESSING:                                                   │
 │    ├─ Call urlService.getUrlByShortUrl(shortUrl)                │
-│    ├─ If found → Increment click & redirect                     │
+│    ├─ If found → Increment click & check redirectType           │
+│    ├─ If PERMANENT → 301 Moved Permanently                      │
+│    ├─ If TEMPORARY → 302 Found (recommended)                    │
 │    └─ If not found → Return 404                                 │
 │                                                                  │
 │  ▸ OUTPUT:                                                       │
-│    └─ HTTP 301 Redirect OR HTTP 404 Not Found                   │
+│    └─ HTTP 301/302 Redirect OR HTTP 404 Not Found               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -503,11 +514,13 @@ Host: localhost:8080
 ┌─────────────────────────────────────────────────────────────────┐
 │  RESPONSE CONSTRUCTION                                          │
 ├─────────────────────────────────────────────────────────────────┤
-│  ▸ SUCCESS PATH:                                                 │
-│    ├─ response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY)│
-│    │   └─ HTTP Status: 301                                      │
-│    └─ response.setHeader("Location", url.getLongUrl())          │
-│        └─ Location: https://example.com/very/long/path          │
+│  ▸ SUCCESS PATH (url.getRedirectType() check):                  │
+│    ├─ PERMANENT → SC_MOVED_PERMANENTLY (301)                    │
+│    │   └─ Browser caches, may miss click counts                │
+│    └─ TEMPORARY → SC_FOUND (302) [RECOMMENDED]                  │
+│        └─ Every click hits server for accurate counting        │
+│    ├─ response.setHeader("Location", url.getLongUrl())          │
+│    └─ Location: https://example.com/very/long/path              │
 │                                                                  │
 │  ▸ FAILURE PATH (URL not found/expired):                        │
 │    └─ response.setStatus(HttpServletResponse.SC_NOT_FOUND)      │
@@ -519,9 +532,14 @@ Host: localhost:8080
 
 ### 📤 Exit Points
 
-**Success Response:**
+**Success Response (depends on redirectType):**
 ```http
+# If redirectType = PERMANENT:
 HTTP/1.1 301 Moved Permanently
+Location: https://example.com/very/long/path
+
+# If redirectType = TEMPORARY (recommended):
+HTTP/1.1 302 Found
 Location: https://example.com/very/long/path
 ```
 
@@ -586,8 +604,9 @@ HTTP/1.1 404 Not Found
     │                    │                              │                  │
     │                    ▼                              ▼                  │
     │    ┌───────────────────────────┐    ┌───────────────────────────┐   │
-    │    │  HTTP 301 Redirect        │    │  HTTP 404 Not Found       │   │
-    │    │  Location: <longUrl>      │    │                           │   │
+    │    │  HTTP 301/302 Redirect   │    │  HTTP 404 Not Found       │   │
+    │    │  (based on redirectType) │    │                           │   │
+    │    │  Location: <longUrl>     │    │                           │   │
     │    └───────────────────────────┘    └───────────────────────────┘   │
     └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -1123,7 +1142,7 @@ Content-Type: application/json
      │                 │                 │◀────────────────│                │
      │                 │◀────────────────│                 │                │
      │                 │                 │                 │                │
-     │ 301 Redirect    │                 │                 │                │
+     │ 301/302 Redirect│                 │                 │                │
      │ Location: URL   │                 │                 │                │
      │◀────────────────│                 │                 │                │
      │                 │                 │                 │                │
@@ -1146,6 +1165,8 @@ Content-Type: application/json
 │  click_count    │  BIGINT         │  NOT NULL, DEFAULT 0    │  Redirect counter  │
 │  expires_at     │  TIMESTAMP      │  NULLABLE               │  Expiration time   │
 │  created_at     │  TIMESTAMP      │  NOT NULL, AUTO         │  Creation time     │
+│  redirect_type  │  VARCHAR(20)    │  NOT NULL, DEFAULT      │  TEMPORARY (302) or│
+│                 │                 │  'TEMPORARY'            │  PERMANENT (301)   │
 │                                                                                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
 

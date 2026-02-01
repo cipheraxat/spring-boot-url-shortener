@@ -1,5 +1,6 @@
 package com.urlshortener;
 
+import com.urlshortener.entity.RedirectType;
 import com.urlshortener.entity.Url;
 import com.urlshortener.repository.UrlRepository;
 import com.urlshortener.service.UrlService;
@@ -44,7 +45,7 @@ class UrlShortenerApplicationTests {
     @Test
     void testUrlShortening() {
         String longUrl = "https://www.example.com/very/long/url/path";
-        Url shortened = urlService.shortenUrl(longUrl, null);
+        Url shortened = urlService.shortenUrl(longUrl, null, RedirectType.TEMPORARY);
 
         assertThat(shortened).isNotNull();
         assertThat(shortened.getLongUrl()).isEqualTo(longUrl);

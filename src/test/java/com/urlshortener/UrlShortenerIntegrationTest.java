@@ -2,6 +2,7 @@ package com.urlshortener;
 
 import com.urlshortener.dto.ShortenUrlRequest;
 import com.urlshortener.dto.ShortenUrlResponse;
+import com.urlshortener.entity.RedirectType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,7 @@ class UrlShortenerIntegrationTest {
         String baseUrl = "http://localhost:" + port;
         String longUrl = "https://www.example.com/test";
 
-        ShortenUrlRequest request = new ShortenUrlRequest(longUrl);
+        ShortenUrlRequest request = new ShortenUrlRequest(longUrl, null, RedirectType.TEMPORARY);
 
         ResponseEntity<ShortenUrlResponse> response = restTemplate.postForEntity(
             baseUrl + "/api/v1/data/shorten",
@@ -49,7 +50,7 @@ class UrlShortenerIntegrationTest {
         String longUrl = "https://www.example.com/redirect-test";
 
         // First shorten
-        ShortenUrlRequest request = new ShortenUrlRequest(longUrl);
+        ShortenUrlRequest request = new ShortenUrlRequest(longUrl, null, RedirectType.PERMANENT);
         ResponseEntity<ShortenUrlResponse> shortenResponse = restTemplate.postForEntity(
             baseUrl + "/api/v1/data/shorten",
             request,

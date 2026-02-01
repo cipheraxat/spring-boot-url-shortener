@@ -31,6 +31,10 @@ public class Url {
     @Column(name = "expires_at")
     private OffsetDateTime expiresAt;
 
+    @Column(name = "redirect_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RedirectType redirectType = RedirectType.TEMPORARY;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -43,10 +47,11 @@ public class Url {
         this.longUrl = longUrl;
     }
 
-    public Url(String shortUrl, String longUrl, OffsetDateTime expiresAt) {
+    public Url(String shortUrl, String longUrl, OffsetDateTime expiresAt, RedirectType redirectType) {
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.expiresAt = expiresAt;
+        this.redirectType = redirectType;
     }
 
     // Getters and Setters
@@ -96,6 +101,14 @@ public class Url {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public RedirectType getRedirectType() {
+        return redirectType;
+    }
+
+    public void setRedirectType(RedirectType redirectType) {
+        this.redirectType = redirectType;
     }
 
     // Business methods

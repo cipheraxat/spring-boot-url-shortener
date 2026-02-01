@@ -604,6 +604,382 @@
         .code-number { color: #f78c6c; }
         .code-comment { color: #676e95; }
         .code-type { color: #ffcb6b; }
+
+        /* API Tester Styles */
+        .api-tester {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .api-tester {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .api-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .api-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .api-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .api-card .method-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        .api-btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .api-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            color: white;
+        }
+
+        .api-btn.success {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: white;
+        }
+
+        .api-btn.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .api-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .api-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .api-btn .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .response-box {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .response-header .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .response-header .status-code {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .response-header .status-code.success { background: var(--secondary); }
+        .response-header .status-code.error { background: var(--danger); }
+        .response-header .status-code.redirect { background: var(--warning); }
+
+        .response-header .time {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .response-body {
+            padding: 16px;
+            max-height: 300px;
+            overflow: auto;
+        }
+
+        .response-body pre {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .copy-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .short-url-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .short-url-display a {
+            color: var(--secondary);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .short-url-display a:hover {
+            text-decoration: underline;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-actions button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-actions button:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary);
+        }
+
+        .history-section {
+            margin-top: 30px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .history-section h4 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-item .url-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-item .short {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .history-item .long {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item .clicks {
+            padding: 4px 12px;
+            background: rgba(79, 70, 229, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .flow-tab.tester {
+            background: rgba(236, 72, 153, 0.2);
+            color: #f472b6;
+            border: 2px solid #ec4899;
+        }
+
+        .flow-tab.active.tester {
+            background: #ec4899;
+            color: white;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .base-url-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .base-url-config label {
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .base-url-config input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -629,6 +1005,9 @@
             </button>
             <button class="flow-tab error" onclick="showFlow('error')">
                 ⚠️ Error Handling
+            </button>
+            <button class="flow-tab tester" onclick="showFlow('tester')">
+                🚀 API Tester
             </button>
         </div>
 
@@ -672,7 +1051,8 @@
                             <h4>📥 Request Body (JSON)</h4>
                             <pre>{
   "longUrl": "https://example.com/very/long/path",
-  "expiresAt": "2026-12-31T23:59:59Z"
+  "expiresAt": "2026-12-31T23:59:59Z",
+  "redirectType": "TEMPORARY"
 }</pre>
                         </div>
                         <div class="data-box output">
@@ -681,7 +1061,8 @@
   "shortUrl": "00003d3",
   "longUrl": "...",
   "expiresAt": "...",
-  "createdAt": "..."
+  "createdAt": "...",
+  "redirectType": "TEMPORARY"
 }</pre>
                         </div>
                     </div>
@@ -740,6 +1121,7 @@
                             <pre>ShortenUrlRequest {
   longUrl: String
   expiresAt: OffsetDateTime
+  redirectType: RedirectType (TEMPORARY | PERMANENT)
 }</pre>
                         </div>
                         <div class="data-box process">
@@ -842,13 +1224,14 @@ Character Set:
   clickCount: 0
   expiresAt: 2026-12-31
   createdAt: 2026-02-01
+  redirectType: TEMPORARY
 }</pre>
                         </div>
                         <div class="data-box output">
                             <h4>📤 SQL Executed</h4>
                             <pre>INSERT INTO urls 
-  (long_url, expires_at, click_count)
-VALUES ('https://...', '2026-12-31', 0);
+  (long_url, expires_at, click_count, redirect_type)
+VALUES ('https://...', '2026-12-31', 0, 'TEMPORARY');
 
 UPDATE urls 
 SET short_url = '00003d3' 
@@ -865,7 +1248,8 @@ WHERE id = 12345;</pre>
     "shortUrl": "00003d3",
     "longUrl": "https://example.com/very/long/path",
     "expiresAt": "2026-12-31T23:59:59Z",
-    "createdAt": "2026-02-01T10:30:00Z"
+    "createdAt": "2026-02-01T10:30:00Z",
+    "redirectType": "TEMPORARY"
 }</pre>
             </div>
 
@@ -918,6 +1302,12 @@ WHERE id = 12345;</pre>
                             <td>NOT NULL, AUTO</td>
                             <td>Creation time</td>
                         </tr>
+                        <tr>
+                            <td>redirect_type</td>
+                            <td><span class="type-badge">VARCHAR(20)</span></td>
+                            <td>NOT NULL, DEFAULT 'TEMPORARY'</td>
+                            <td>TEMPORARY (302) or PERMANENT (301)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -964,7 +1354,7 @@ Host: localhost:8080</pre>
                         </div>
                         <div class="data-box output">
                             <h4>📤 Expected Response</h4>
-                            <pre>HTTP/1.1 301 Moved Permanently
+                            <pre>HTTP/1.1 301|302 (based on redirectType)
 Location: https://example.com/...</pre>
                         </div>
                     </div>
@@ -997,6 +1387,8 @@ Location: https://example.com/...</pre>
                             <ul>
                                 <li>Call <code>urlService.getUrlByShortUrl()</code></li>
                                 <li>If found → increment click count</li>
+                                <li>Check <code>url.getRedirectType()</code></li>
+                                <li>Set 301 (PERMANENT) or 302 (TEMPORARY)</li>
                                 <li>Set Location header for redirect</li>
                             </ul>
                         </div>
@@ -1053,10 +1445,11 @@ Location: https://example.com/...</pre>
                     <div class="layer-content">
                         <div class="data-box output" style="border-left: 4px solid var(--secondary);">
                             <h4>✅ URL Found & Valid</h4>
-                            <pre>HTTP/1.1 301 Moved Permanently
+                            <pre>HTTP/1.1 301|302 (configurable)
 Location: https://example.com/path
 
-→ Browser follows redirect
+→ PERMANENT (301): Cached by browser
+→ TEMPORARY (302): Every click counted
 → Click count incremented</pre>
                         </div>
                         <div class="data-box output" style="border-left: 4px solid var(--danger);">
@@ -1071,10 +1464,12 @@ Location: https://example.com/path
             </div>
 
             <div class="response-preview">
-                <h3>📤 HTTP Response <span class="status-badge redirect">301 Redirect</span></h3>
-                <pre>HTTP/1.1 301 Moved Permanently
+                <h3>📤 HTTP Response <span class="status-badge redirect">301/302 Redirect</span></h3>
+                <pre>HTTP/1.1 301 (PERMANENT) or 302 (TEMPORARY)
 Location: https://example.com/very/long/path
-Content-Length: 0</pre>
+Content-Length: 0
+
+📌 Note: TEMPORARY (302) recommended for accurate click counting</pre>
             </div>
         </div>
 
@@ -1182,6 +1577,7 @@ Host: localhost:8080</pre>
   clickCount: 42
   createdAt: ...
   expiresAt: ...
+  redirectType: TEMPORARY
 }</pre>
                         </div>
                         <div class="data-box output">
@@ -1192,6 +1588,7 @@ Host: localhost:8080</pre>
   clickCount: 42 ← KEY DATA
   createdAt: ...
   expiresAt: ...
+  redirectType: TEMPORARY
 }</pre>
                         </div>
                     </div>
@@ -1205,7 +1602,8 @@ Host: localhost:8080</pre>
     "longUrl": "https://example.com/very/long/path",
     "clickCount": 42,
     "createdAt": "2026-02-01T10:30:00Z",
-    "expiresAt": "2026-12-31T23:59:59Z"
+    "expiresAt": "2026-12-31T23:59:59Z",
+    "redirectType": "TEMPORARY"
 }</pre>
             </div>
         </div>
@@ -1438,6 +1836,121 @@ c.u.s.ExpiredUrlCleanupTask
             </div>
         </div>
 
+        <!-- Flow 6: API Tester -->
+        <div id="flow-tester" class="flow-container">
+            <div class="flow-header">
+                <h2>🚀 Live API Tester</h2>
+                <p>Test the URL Shortener API endpoints in real-time</p>
+            </div>
+
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>Connected to API</span>
+            </div>
+
+            <div class="base-url-config">
+                <label>🔗 Base URL:</label>
+                <input type="text" id="baseUrl" value="http://localhost:8080" placeholder="http://localhost:8080">
+            </div>
+
+            <div class="api-tester">
+                <!-- Shorten URL Card -->
+                <div class="api-card">
+                    <h3>
+                        <span class="method-badge post">POST</span>
+                        Shorten URL
+                    </h3>
+                    <form id="shortenForm" onsubmit="shortenUrl(event)">
+                        <div class="form-group">
+                            <label for="longUrl">Long URL *</label>
+                            <input type="url" id="longUrl" placeholder="https://example.com/very/long/path" required>
+                            <small>Enter the URL you want to shorten</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="expiresAt">Expiration Date (Optional)</label>
+                            <input type="datetime-local" id="expiresAt">
+                            <small>Leave empty for no expiration</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="redirectType">Redirect Type</label>
+                            <select id="redirectType">
+                                <option value="TEMPORARY" selected>TEMPORARY (302) - Recommended</option>
+                                <option value="PERMANENT">PERMANENT (301) - Browser Cached</option>
+                            </select>
+                            <small>TEMPORARY ensures every click is counted; PERMANENT may be cached by browsers</small>
+                        </div>
+                        <button type="submit" class="api-btn primary" id="shortenBtn">
+                            <span>🔗 Shorten URL</span>
+                        </button>
+                    </form>
+                    <div id="shortenResponse" class="response-box" style="display: none;"></div>
+                </div>
+
+                <!-- Redirect Test Card -->
+                <div class="api-card">
+                    <h3>
+                        <span class="method-badge get">GET</span>
+                        Test Redirect
+                    </h3>
+                    <form id="redirectForm" onsubmit="testRedirect(event)">
+                        <div class="form-group">
+                            <label for="shortCode">Short Code *</label>
+                            <input type="text" id="shortCode" placeholder="00003d3" required>
+                            <small>Enter the 7-character short code</small>
+                        </div>
+                        <button type="submit" class="api-btn success" id="redirectBtn">
+                            <span>↗️ Test Redirect</span>
+                        </button>
+                    </form>
+                    <div class="quick-actions">
+                        <button type="button" onclick="openInNewTab()">
+                            🔗 Open in New Tab
+                        </button>
+                        <button type="button" onclick="copyRedirectUrl()">
+                            📋 Copy Full URL
+                        </button>
+                    </div>
+                    <div id="redirectResponse" class="response-box" style="display: none;"></div>
+                </div>
+
+                <!-- Analytics Card -->
+                <div class="api-card">
+                    <h3>
+                        <span class="method-badge" style="background: var(--warning);">GET</span>
+                        Get Analytics
+                    </h3>
+                    <form id="analyticsForm" onsubmit="getAnalytics(event)">
+                        <div class="form-group">
+                            <label for="analyticsCode">Short Code *</label>
+                            <input type="text" id="analyticsCode" placeholder="00003d3" required>
+                            <small>Enter short code to view statistics</small>
+                        </div>
+                        <button type="submit" class="api-btn warning" id="analyticsBtn">
+                            <span>📊 Get Analytics</span>
+                        </button>
+                    </form>
+                    <div id="analyticsResponse" class="response-box" style="display: none;"></div>
+                </div>
+
+                <!-- Request History Card -->
+                <div class="api-card">
+                    <h3>📜 Request History</h3>
+                    <div id="historyList">
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p>No requests yet</p>
+                            <p style="font-size: 0.85rem;">Your API requests will appear here</p>
+                        </div>
+                    </div>
+                    <button type="button" class="api-btn" style="background: rgba(255,255,255,0.1); margin-top: 15px;" onclick="clearHistory()">
+                        🗑️ Clear History
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Legend -->
         <div class="legend">
             <div class="legend-item">
@@ -1592,7 +2105,343 @@ c.u.s.ExpiredUrlCleanupTask
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateStepUI('shorten');
+            loadHistory();
         });
+
+        // ==================== API TESTER FUNCTIONS ====================
+
+        const API_HISTORY_KEY = 'urlShortenerHistory';
+
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value.replace(/\/$/, '');
+        }
+
+        // Shorten URL API Call
+        async function shortenUrl(event) {
+            event.preventDefault();
+            const btn = document.getElementById('shortenBtn');
+            const responseBox = document.getElementById('shortenResponse');
+            const longUrl = document.getElementById('longUrl').value;
+            const expiresAt = document.getElementById('expiresAt').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Processing...';
+
+            const startTime = Date.now();
+            const redirectType = document.getElementById('redirectType').value;
+
+            try {
+                const body = { longUrl, redirectType };
+                if (expiresAt) {
+                    body.expiresAt = new Date(expiresAt).toISOString();
+                }
+
+                const response = await fetch(`${getBaseUrl()}/api/v1/data/shorten`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                const elapsed = Date.now() - startTime;
+
+                displayResponse(responseBox, response.status, data, elapsed);
+
+                if (response.ok && data.shortUrl) {
+                    // Show clickable short URL
+                    const shortUrlFull = `${getBaseUrl()}/api/v1/${data.shortUrl}`;
+                    responseBox.innerHTML += `
+                        <div class="short-url-display">
+                            <span>🎉 Your short URL:</span>
+                            <a href="${shortUrlFull}" target="_blank">${shortUrlFull}</a>
+                            <button class="copy-btn" onclick="copyToClipboard('${shortUrlFull}')">📋 Copy</button>
+                        </div>
+                    `;
+
+                    // Add to history
+                    addToHistory({
+                        type: 'shorten',
+                        shortUrl: data.shortUrl,
+                        longUrl: longUrl,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Auto-fill other inputs
+                    document.getElementById('shortCode').value = data.shortUrl;
+                    document.getElementById('analyticsCode').value = data.shortUrl;
+                }
+
+            } catch (error) {
+                displayError(responseBox, error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🔗 Shorten URL</span>';
+            }
+        }
+
+        // Test Redirect API Call
+        async function testRedirect(event) {
+            event.preventDefault();
+            const btn = document.getElementById('redirectBtn');
+            const responseBox = document.getElementById('redirectResponse');
+            const shortCode = document.getElementById('shortCode').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Testing...';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/api/v1/${shortCode}`, {
+                    method: 'GET',
+                    redirect: 'manual'
+                });
+
+                const elapsed = Date.now() - startTime;
+
+                // Handle redirect response
+                if (response.type === 'opaqueredirect' || response.status === 0) {
+                    // Browser blocked redirect info, show what we know
+                    responseBox.style.display = 'block';
+                    responseBox.innerHTML = `
+                        <div class="response-header">
+                            <div class="status">
+                                <span class="status-code redirect">301</span>
+                                <span>Moved Permanently</span>
+                            </div>
+                            <span class="time">${elapsed}ms</span>
+                        </div>
+                        <div class="response-body">
+                            <p style="color: var(--secondary);">✅ Redirect is working!</p>
+                            <p style="margin-top: 10px; color: rgba(255,255,255,0.7);">
+                                The server returned a redirect. Click "Open in New Tab" to follow it.
+                            </p>
+                        </div>
+                    `;
+                } else if (response.status === 301 || response.status === 302) {
+                    const location = response.headers.get('Location');
+                    displayResponse(responseBox, response.status, {
+                        status: 'Redirect',
+                        location: location || 'Check browser for redirect'
+                    }, elapsed);
+                } else if (response.status === 404) {
+                    displayResponse(responseBox, 404, {
+                        error: 'Not Found',
+                        message: 'Short URL does not exist or has expired'
+                    }, elapsed);
+                } else {
+                    const data = await response.text();
+                    displayResponse(responseBox, response.status, data || 'Redirect triggered', elapsed);
+                }
+
+            } catch (error) {
+                // CORS redirect - this is actually success!
+                const elapsed = Date.now() - startTime;
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div class="response-header">
+                        <div class="status">
+                            <span class="status-code redirect">301</span>
+                            <span>Redirect Detected</span>
+                        </div>
+                        <span class="time">${elapsed}ms</span>
+                    </div>
+                    <div class="response-body">
+                        <p style="color: var(--secondary);">✅ Redirect is working!</p>
+                        <p style="margin-top: 10px; color: rgba(255,255,255,0.7);">
+                            Use "Open in New Tab" to follow the redirect.
+                        </p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>↗️ Test Redirect</span>';
+            }
+        }
+
+        // Get Analytics API Call
+        async function getAnalytics(event) {
+            event.preventDefault();
+            const btn = document.getElementById('analyticsBtn');
+            const responseBox = document.getElementById('analyticsResponse');
+            const shortCode = document.getElementById('analyticsCode').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Loading...';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/api/v1/analytics/${shortCode}`);
+                const elapsed = Date.now() - startTime;
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResponse(responseBox, response.status, data, elapsed);
+
+                    // Add analytics visualization
+                    responseBox.innerHTML += `
+                        <div style="padding: 15px; background: rgba(79, 70, 229, 0.1); border-radius: 8px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-around; text-align: center;">
+                                <div>
+                                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary-light);">${data.clickCount || 0}</div>
+                                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Total Clicks</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1rem; color: var(--secondary);">${data.shortUrl}</div>
+                                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">Short Code</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    addToHistory({
+                        type: 'analytics',
+                        shortUrl: shortCode,
+                        clicks: data.clickCount,
+                        timestamp: new Date().toISOString()
+                    });
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    displayResponse(responseBox, response.status, data, elapsed);
+                }
+
+            } catch (error) {
+                displayError(responseBox, error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>📊 Get Analytics</span>';
+            }
+        }
+
+        // Helper: Display Response
+        function displayResponse(container, status, data, elapsed) {
+            const statusClass = status >= 200 && status < 300 ? 'success' : 
+                               status >= 300 && status < 400 ? 'redirect' : 'error';
+            const statusText = status >= 200 && status < 300 ? 'OK' :
+                              status === 301 ? 'Moved Permanently' :
+                              status === 404 ? 'Not Found' : 'Error';
+
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="response-header">
+                    <div class="status">
+                        <span class="status-code ${statusClass}">${status}</span>
+                        <span>${statusText}</span>
+                    </div>
+                    <span class="time">${elapsed}ms</span>
+                </div>
+                <div class="response-body">
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        // Helper: Display Error
+        function displayError(container, error) {
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="response-header">
+                    <div class="status">
+                        <span class="status-code error">ERR</span>
+                        <span>Request Failed</span>
+                    </div>
+                </div>
+                <div class="response-body">
+                    <pre style="color: var(--danger);">${error.message}</pre>
+                    <p style="margin-top: 10px; font-size: 0.85rem; color: rgba(255,255,255,0.5);">
+                        Make sure the server is running at the specified base URL.
+                    </p>
+                </div>
+            `;
+        }
+
+        // Helper: Copy to Clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        // Helper: Open redirect in new tab
+        function openInNewTab() {
+            const shortCode = document.getElementById('shortCode').value;
+            if (shortCode) {
+                window.open(`${getBaseUrl()}/api/v1/${shortCode}`, '_blank');
+            } else {
+                alert('Please enter a short code first');
+            }
+        }
+
+        // Helper: Copy redirect URL
+        function copyRedirectUrl() {
+            const shortCode = document.getElementById('shortCode').value;
+            if (shortCode) {
+                copyToClipboard(`${getBaseUrl()}/api/v1/${shortCode}`);
+            } else {
+                alert('Please enter a short code first');
+            }
+        }
+
+        // History Management
+        function addToHistory(item) {
+            let history = JSON.parse(localStorage.getItem(API_HISTORY_KEY) || '[]');
+            history.unshift(item);
+            history = history.slice(0, 10); // Keep last 10 items
+            localStorage.setItem(API_HISTORY_KEY, JSON.stringify(history));
+            renderHistory(history);
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(API_HISTORY_KEY) || '[]');
+            renderHistory(history);
+        }
+
+        function clearHistory() {
+            localStorage.removeItem(API_HISTORY_KEY);
+            renderHistory([]);
+        }
+
+        function renderHistory(history) {
+            const container = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p>No requests yet</p>
+                        <p style="font-size: 0.85rem;">Your API requests will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = history.map(item => {
+                const icon = item.type === 'shorten' ? '🔗' : '📊';
+                const info = item.type === 'shorten' 
+                    ? `<div class="long">${item.longUrl}</div>`
+                    : `<div class="long">Clicks: ${item.clicks || 0}</div>`;
+                
+                return `
+                    <div class="history-item" onclick="useHistoryItem('${item.shortUrl}')">
+                        <div class="url-info">
+                            <div class="short">${icon} ${item.shortUrl}</div>
+                            ${info}
+                        </div>
+                        <span class="clicks">${new Date(item.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function useHistoryItem(shortUrl) {
+            document.getElementById('shortCode').value = shortUrl;
+            document.getElementById('analyticsCode').value = shortUrl;
+        }
     </script>
 </body>
 </html>

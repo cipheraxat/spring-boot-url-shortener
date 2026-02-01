@@ -3,6 +3,7 @@ package com.urlshortener.controller;
 import com.urlshortener.dto.AnalyticsResponse;
 import com.urlshortener.dto.ShortenUrlRequest;
 import com.urlshortener.dto.ShortenUrlResponse;
+import com.urlshortener.entity.RedirectType;
 import com.urlshortener.entity.Url;
 import com.urlshortener.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,13 +33,14 @@ public class UrlController {
     @Operation(summary = "Shorten a URL", description = "Create a short URL from a long URL")
     public ResponseEntity<ShortenUrlResponse> shortenUrl(@Valid @RequestBody ShortenUrlRequest request) {
         try {
-            Url url = urlService.shortenUrl(request.getLongUrl(), request.getExpiresAt());
+            Url url = urlService.shortenUrl(request.getLongUrl(), request.getExpiresAt(), request.getRedirectType());
 
             ShortenUrlResponse response = new ShortenUrlResponse(
                 url.getShortUrl(),
                 url.getLongUrl(),
                 url.getExpiresAt(),
-                url.getCreatedAt()
+                url.getCreatedAt(),
+                url.getRedirectType()
             );
 
             return ResponseEntity.ok(response);
@@ -55,7 +57,14 @@ public class UrlController {
         if (urlOptional.isPresent()) {
             Url url = urlOptional.get();
             urlService.incrementClickCount(shortUrl);
-            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            
+            // Use the redirect type configured for this URL
+            if (url.getRedirectType() == RedirectType.PERMANENT) {
+                response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+            } else {
+                response.setStatus(HttpServletResponse.SC_FOUND); // 302
+            }
+
             response.setHeader("Location", url.getLongUrl());
         } else {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -74,7 +83,8 @@ public class UrlController {
                 url.getLongUrl(),
                 url.getClickCount(),
                 url.getCreatedAt(),
-                url.getExpiresAt()
+                url.getExpiresAt(),
+                url.getRedirectType()
             );
             return ResponseEntity.ok(response);
         } else {

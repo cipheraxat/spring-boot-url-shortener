@@ -1,5 +1,6 @@
 package com.urlshortener.dto;
 
+import com.urlshortener.entity.RedirectType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -13,15 +14,18 @@ public class ShortenUrlRequest {
 
     private OffsetDateTime expiresAt;
 
+    private RedirectType redirectType = RedirectType.TEMPORARY;
+
     public ShortenUrlRequest() {}
 
     public ShortenUrlRequest(String longUrl) {
         this.longUrl = longUrl;
     }
 
-    public ShortenUrlRequest(String longUrl, OffsetDateTime expiresAt) {
+    public ShortenUrlRequest(String longUrl, OffsetDateTime expiresAt, RedirectType redirectType) {
         this.longUrl = longUrl;
         this.expiresAt = expiresAt;
+        this.redirectType = redirectType;
     }
 
     public String getLongUrl() {
@@ -38,5 +42,13 @@ public class ShortenUrlRequest {
 
     public void setExpiresAt(OffsetDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public RedirectType getRedirectType() {
+        return redirectType;
+    }
+
+    public void setRedirectType(RedirectType redirectType) {
+        this.redirectType = redirectType;
     }
 }
