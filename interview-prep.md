@@ -1527,5 +1527,99 @@ export const options = {
 > Micrometer is a metrics facade (like SLF4J for logging). It auto-instruments Spring Boot components (HTTP, JPA, caching) and exports metrics to any supported backend (Prometheus, Datadog, CloudWatch) via registry adapters. You add `micrometer-registry-prometheus` and it automatically formats all metrics for Prometheus's `/metrics` endpoint.
 
 **Q: What happens if Prometheus goes down?**
-> Metrics collection stops but the application is unaffected (pull model). When Prometheus restarts, it resumes scraping but there will be a gap in the time series data. For critical monitoring, you'd run Prometheus in HA mode with two instances scraping the same targets.</content>
-<parameter name="filePath">/Users/Admin/Developer/Projects/url-shortener/interview-prep.md
+> Metrics collection stops but the application is unaffected (pull model). When Prometheus restarts, it resumes scraping but there will be a gap in the time series data. For critical monitoring, you'd run Prometheus in HA mode with two instances scraping the same targets.
+ 
+## Logging Observability with Grafana Loki + Promtail
+
+### Why Loki in this project
+- Prometheus handles numeric time-series metrics (latency, RPS, JVM, DB pool)
+- Loki handles application logs (INFO/ERROR) with low-cost indexing (labels only)
+- Grafana becomes a single UI for both metrics and logs
+
+### End-to-end log flow
+```
+Spring Boot app (JSON logs) -> logs/url-shortener.log
+                              -> Promtail tails file and pushes to Loki
+                              -> Grafana queries Loki for logs and log-metrics
+```
+
+### Components added
+
+#### 1) Loki service (`monitoring/loki/loki-config.yml`)
+- Runs as a Docker service (`grafana/loki:3.1.1`)
+- Stores logs in local volume (`loki_data`)
+- Uses TSDB schema (`store: tsdb`, `schema: v13`) compatible with Loki 3.x
+
+#### 2) Promtail service (`monitoring/promtail/promtail-config.yml`)
+- Tails `./logs/*.log` via mounted path `/var/log/url-shortener/*.log`
+- Pushes log streams to `http://loki:3100/loki/api/v1/push`
+- Labels each stream with:
+  - `job=url-shortener-logs`
+  - `app=url-shortener`
+
+#### 3) Grafana datasource provisioning
+In `monitoring/grafana/provisioning/datasources/datasource.yml`:
+```yaml
+- name: Loki
+  uid: loki
+  type: loki
+  url: http://loki:3100
+```
+
+### Docker Compose wiring
+Added services in `docker-compose.yml`:
+- `loki`
+- `promtail`
+
+Also added:
+- `loki_data` volume
+- `grafana` depends on `loki`
+
+### Dashboard additions (Log panels + log metrics)
+In `url-shortener-overview.json`:
+- **Error Logs / Min** (stat)
+- **Log Volume by Level** (timeseries: INFO vs ERROR)
+- **Recent INFO / ERROR Logs** (logs panel)
+
+### Key LogQL queries used
+
+#### Error logs per minute
+```logql
+sum(count_over_time({job="url-shortener-logs"} |= "\"level\":\"ERROR\"" [1m]))
+```
+
+#### INFO and ERROR volume
+```logql
+sum(count_over_time({job="url-shortener-logs"} |= "\"level\":\"INFO\"" [1m]))
+sum(count_over_time({job="url-shortener-logs"} |= "\"level\":\"ERROR\"" [1m]))
+```
+
+#### Recent logs stream
+```logql
+{job="url-shortener-logs"} |~ "\"level\":\"(INFO|ERROR)\""
+```
+
+### Important implementation note
+Although Promtail has JSON parsing stages, level labels may not always appear as expected depending on ingestion timing/pipeline behavior. For stability in interview demos, the dashboard queries filter directly on the JSON message text (`"level":"INFO"` / `"level":"ERROR"`).
+
+### Validation checklist
+- `docker-compose up -d loki promtail grafana prometheus`
+- Loki up: `curl http://localhost:3100/ready`
+- Loki labels: `curl http://localhost:3100/loki/api/v1/labels`
+- INFO count query returns non-zero
+- ERROR count query returns non-zero (when errors are present)
+- Grafana datasource list includes both `Prometheus` and `Loki`
+
+### Common Loki troubleshooting
+
+| Problem | Root Cause | Fix |
+|---|---|---|
+| `lookup loki ... no such host` in Promtail | Loki not running or DNS stale | Start/restart `loki` then restart `promtail` |
+| Loki exits on startup | Loki 3.x config incompatibility | Use TSDB schema and valid 3.x config (`compactor`, `allow_structured_metadata`) |
+| Logs visible but no level split | Level label not extracted | Use content-based LogQL filter on JSON log text |
+| Grafana 502 from Loki datasource | Datasource points to missing service | Ensure datasource URL is `http://loki:3100` and Loki container is healthy |
+
+### Interview talking points
+- **Why Loki instead of ELK?**: Lower operational overhead for Kubernetes/Docker setups, cheaper indexing model, native Grafana integration.
+- **Metrics vs Logs**: Metrics detect *that* something is wrong; logs explain *why*.
+- **Best practice**: Correlate spikes in p95/5xx metrics (Prometheus) with ERROR spikes/log traces (Loki) in the same dashboard.

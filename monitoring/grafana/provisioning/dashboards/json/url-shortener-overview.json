@@ -360,12 +360,164 @@
       ],
       "title": "JVM Threads",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 20},
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"url-shortener-logs\"} |= \"\\\"level\\\":\\\"ERROR\\\"\" [1m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Error Logs / Min",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"url-shortener-logs\"} |= \"\\\"level\\\":\\\"INFO\\\"\" [1m]))",
+          "legendFormat": "INFO",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(count_over_time({job=\"url-shortener-logs\"} |= \"\\\"level\\\":\\\"ERROR\\\"\" [1m]))",
+          "legendFormat": "ERROR",
+          "refId": "B"
+        }
+      ],
+      "title": "Log Volume by Level",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+      "id": 15,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "expr": "{job=\"url-shortener-logs\"} |~ \"\\\"level\\\":\\\"(INFO|ERROR)\\\"\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent INFO / ERROR Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 36},
+      "id": 16,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "expr": "{job=\"url-shortener-logs\"} |~ \"\\\"level\\\":\\\"INFO\\\"\"",
+          "refId": "A"
+        }
+      ],
+      "title": "INFO Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 36},
+      "id": 17,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "expr": "{job=\"url-shortener-logs\"} |~ \"\\\"level\\\":\\\"ERROR\\\"\"",
+          "refId": "A"
+        }
+      ],
+      "title": "ERROR Logs",
+      "type": "logs"
     }
   ],
   "refresh": "10s",
   "schemaVersion": 39,
   "style": "dark",
-  "tags": ["url-shortener", "monitoring", "prometheus"],
+  "tags": ["url-shortener", "monitoring", "prometheus", "loki", "logs"],
   "templating": {
     "list": [
       {
