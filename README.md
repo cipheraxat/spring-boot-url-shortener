@@ -47,7 +47,7 @@ A scalable URL shortener service built with Spring Boot, following system design
 
 3. Run the application:
    ```bash
-   ./mvnw spring-boot:run
+   mvn spring-boot:run
    ```
 
 ## API Endpoints
@@ -167,17 +167,17 @@ The service follows a layered architecture:
 
 ### Running Tests
 ```bash
-./mvnw test
+mvn test
 ```
 
 ### Code Coverage
 ```bash
-./mvnw jacoco:report
+mvn jacoco:report
 ```
 
 ### Building
 ```bash
-./mvnw clean package
+mvn clean package
 ```
 
 ## Logging
@@ -212,6 +212,71 @@ tail -f logs/url-shortener.log | jq .
 - Health checks: `/actuator/health`
 - Metrics: `/actuator/metrics`
 - Info: `/actuator/info`
+- Prometheus format metrics: `/actuator/prometheus`
+
+### Grafana + Prometheus Setup
+
+The project includes pre-configured Prometheus and Grafana services in `docker-compose.yml`.
+
+Start all services:
+
+```bash
+docker-compose up --build
+```
+
+Access monitoring tools:
+
+- **Prometheus UI**: `http://localhost:9090`
+- **Grafana UI**: `http://localhost:3000`
+  - Username: `admin`
+  - Password: `admin`
+
+Grafana is auto-provisioned with a default Prometheus datasource (`http://prometheus:9090`).
+It also auto-loads the **URL Shortener Overview** dashboard in the **URL Shortener** folder.
+
+The dashboard includes:
+
+- Request throughput (RPS)
+- 5xx error rate
+- P95/P99 request latency
+- JVM heap used/max
+- Process CPU usage
+- Live JVM threads
+
+## Load Testing with K6
+
+K6 test scripts are available under `k6/`:
+
+- `k6/smoke-test.js`: quick health + shorten + redirect sanity test
+- `k6/load-test.js`: ramping VU load profile for shorten/redirect/analytics endpoints
+
+### Prerequisites
+
+- Install K6 (macOS):
+
+```bash
+brew install k6
+```
+
+### Run Smoke Test
+
+```bash
+k6 run k6/smoke-test.js
+```
+
+### Run Load Test
+
+```bash
+k6 run k6/load-test.js
+```
+
+### Custom Base URL
+
+Use `BASE_URL` for non-local environments:
+
+```bash
+BASE_URL=http://localhost:8080 k6 run k6/load-test.js
+```
 
 ## Contributing
 

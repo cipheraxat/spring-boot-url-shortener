@@ -1301,5 +1301,231 @@ mvn test
 mvn spring-boot:run
 ```
 
-This comprehensive guide covers the complete URL shortener implementation with deep technical details, design decisions, and interview preparation material. Study the code alongside this documentation to understand the practical application of system design principles.</content>
+This comprehensive guide covers the complete URL shortener implementation with deep technical details, design decisions, and interview preparation material. Study the code alongside this documentation to understand the practical application of system design principles.
+
+---
+
+## Monitoring & Observability with Prometheus and Grafana
+
+### Overview
+
+The URL shortener uses a **Prometheus + Grafana** monitoring stack to collect, store, and visualize application metrics in real-time. This provides full observability into application health, performance, and infrastructure.
+
+### Architecture Flow
+
+```
+┌─────────────────────┐         ┌──────────────────────┐         ┌─────────────────────┐
+│   Spring Boot App   │  PULL   │     Prometheus       │  QUERY  │      Grafana        │
+│                     │◀────────│                      │◀────────│                     │
+│ /actuator/prometheus│ (every  │  Stores time series  │         │  Dashboards &       │
+│                     │  15s)   │  data (TSDB)         │         │  Alerts             │
+│ Micrometer collects │         │                      │         │                     │
+│ JVM, HTTP, DB, etc. │         │  localhost:9090       │         │  localhost:3000      │
+└─────────────────────┘         └──────────────────────┘         └─────────────────────┘
+```
+
+**Key concept**: Prometheus uses a **pull model** — it scrapes metrics from the application at a configured interval (every 15 seconds), rather than the application pushing metrics to it.
+
+### How It's Enabled — Step by Step
+
+#### Step 1: Dependencies (pom.xml)
+
+Two dependencies work together to expose metrics:
+
+```xml
+<!-- Provides /actuator endpoints including /actuator/metrics -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+<!-- Converts Micrometer metrics into Prometheus exposition format -->
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+```
+
+- **Spring Boot Actuator**: Exposes operational endpoints (`/actuator/health`, `/actuator/metrics`, etc.)
+- **Micrometer Prometheus Registry**: Adds the `/actuator/prometheus` endpoint that formats all metrics in Prometheus's text-based exposition format
+
+#### Step 2: Application Configuration (application.properties)
+
+```properties
+# Expose the prometheus endpoint (along with health, info, metrics)
+management.endpoints.web.exposure.include=health,info,metrics,prometheus
+
+# Enable histogram buckets for accurate latency percentile calculations (p50, p95, p99)
+management.metrics.distribution.percentiles-histogram.http.server.requests=true
+management.metrics.distribution.percentiles.http.server.requests=0.5,0.95,0.99
+```
+
+**Why histogram buckets matter:**
+- Without `percentiles-histogram=true`, only basic counters are collected (request count, total time)
+- With it enabled, Prometheus collects **bucket data** (`http_server_requests_seconds_bucket`) that allows accurate percentile calculations like p95 and p99 latency
+- This is critical for SLA monitoring — knowing that 95% of requests complete under X ms
+
+#### Step 3: Micrometer Auto-Instrumentation
+
+Spring Boot + Micrometer automatically instruments these metrics **without any code changes**:
+
+| Category | Metrics Collected | Example |
+|----------|------------------|---------|
+| **HTTP** | Request count, latency, status codes | `http_server_requests_seconds_count` |
+| **JVM Memory** | Heap used/max, non-heap, GC | `jvm_memory_used_bytes{area="heap"}` |
+| **JVM Threads** | Live, daemon, peak threads | `jvm_threads_live_threads` |
+| **CPU** | System and process CPU usage | `process_cpu_usage`, `system_cpu_usage` |
+| **Database** | HikariCP active/idle/max connections | `hikaricp_connections_active` |
+| **GC** | Pause time, collection count | `jvm_gc_pause_seconds` |
+| **Disk** | Free disk space | `disk_free_bytes` |
+
+#### Step 4: Prometheus Scraping Configuration (prometheus.yml)
+
+```yaml
+global:
+  scrape_interval: 15s        # How often Prometheus pulls metrics
+  evaluation_interval: 15s    # How often alerting rules are evaluated
+
+scrape_configs:
+  - job_name: url-shortener-app
+    metrics_path: /actuator/prometheus     # Endpoint to scrape
+    static_configs:
+      - targets:
+          - host.docker.internal:8080     # Application address from Docker's perspective
+```
+
+**Important networking detail:**
+- When the app runs **inside Docker**: use `app:8080` (container name)
+- When the app runs **locally** but Prometheus is in Docker: use `host.docker.internal:8080` (Docker's way to reach the host machine)
+
+#### Step 5: Grafana Data Source (datasource.yml)
+
+```yaml
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    url: http://prometheus:9090    # Grafana reaches Prometheus via Docker network
+    access: proxy
+    isDefault: true
+```
+
+Grafana connects to Prometheus using the Docker internal network hostname `prometheus` (the service name in docker-compose).
+
+### Docker Compose Setup
+
+```yaml
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - urlshortener
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - urlshortener
+```
+
+### Grafana Dashboard Panels
+
+The provisioned dashboard ("URL Shortener Overview") includes:
+
+| Panel | Type | Query | Purpose |
+|-------|------|-------|---------|
+| **App Up** | Stat | `up{job="url-shortener-app"}` | Shows if the app is reachable (1=up, 0=down) |
+| **Request Rate (RPS)** | Stat | `sum(rate(http_server_requests_seconds_count[1m]))` | Current requests per second |
+| **p95 Latency** | Stat | `histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[1m])) by (le)) * 1000` | 95th percentile response time in ms |
+| **5xx Error Rate** | Stat | `sum(rate(...{status=~"5.."}[1m])) / clamp_min(sum(rate(...[1m])), 1)` | Percentage of server errors |
+| **HTTP Throughput** | Time Series | `sum(rate(...[1m])) by (method, uri)` | Throughput breakdown by endpoint |
+| **Latency Percentiles** | Time Series | `histogram_quantile(0.5/0.95/0.99, ...)` | p50, p95, p99 latency over time |
+| **JVM Heap** | Time Series | `jvm_memory_used_bytes{area="heap"}` | Heap usage vs max |
+| **CPU Usage** | Time Series | `system_cpu_usage`, `process_cpu_usage` | System vs process CPU |
+| **HikariCP Connections** | Time Series | `hikaricp_connections_active/idle/max` | Database connection pool health |
+| **JVM Threads** | Time Series | `jvm_threads_live_threads` | Thread count over time |
+
+### Common PromQL Patterns Explained
+
+```promql
+# rate() - per-second average rate of increase over a time window
+rate(http_server_requests_seconds_count[1m])
+
+# sum() by () - aggregate and group
+sum(rate(http_server_requests_seconds_count[1m])) by (method, uri)
+
+# histogram_quantile() - calculate percentiles from histogram buckets
+histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[1m])) by (le))
+
+# clamp_min() - prevent division by zero
+sum(errors) / clamp_min(sum(total), 1)
+```
+
+### Load Testing with K6
+
+K6 scripts are used to generate traffic and observe metrics in Grafana:
+
+```javascript
+// k6/smoke-test.js - Quick health check
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = { vus: 1, duration: '10s' };
+
+export default function () {
+  const res = http.get('http://localhost:8080/actuator/health');
+  check(res, { 'status is 200': (r) => r.status === 200 });
+}
+```
+
+```javascript
+// k6/load-test.js - Ramping load test
+export const options = {
+  stages: [
+    { duration: '1m', target: 20 },   // Ramp up
+    { duration: '3m', target: 100 },   // Sustained load
+    { duration: '1m', target: 0 },     // Ramp down
+  ],
+};
+```
+
+### Troubleshooting Checklist
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| No data in Grafana | Prometheus not running | `docker-compose up prometheus -d` |
+| 502 error in Grafana | Prometheus container down | Start Prometheus, check Docker network |
+| No p95 latency data | Histogram buckets not enabled | Add `management.metrics.distribution.percentiles-histogram.http.server.requests=true` |
+| Duplicate instances | Target changed (e.g. `app:8080` → `host.docker.internal:8080`) | Filter queries by `instance="host.docker.internal:8080"` or restart Prometheus |
+| Stale metrics | Old Prometheus data | `docker-compose down prometheus && docker-compose up prometheus -d` |
+
+### Interview Q&A
+
+**Q: Why Prometheus over other monitoring tools (Datadog, New Relic)?**
+> Prometheus is open-source, designed for cloud-native/containerized environments, uses a pull model that's more resilient, and integrates natively with Kubernetes. It's also free and self-hosted.
+
+**Q: What's the difference between push and pull model for metrics?**
+> **Pull (Prometheus)**: The monitoring server scrapes endpoints at intervals. Benefits: monitoring server controls the rate, targets don't need to know about the monitoring system, easier to detect if a target is down.
+> **Push (e.g., StatsD)**: Applications push metrics to a collector. Benefits: works better behind firewalls, supports short-lived jobs. Drawback: harder to detect if a service is down.
+
+**Q: Why use histogram_quantile instead of just average latency?**
+> Averages hide outliers. If 99% of requests take 5ms but 1% take 5 seconds, the average looks fine (~55ms). p95/p99 latency reveals the worst-case experience that real users face, which is critical for SLA compliance.
+
+**Q: How does Micrometer work with Spring Boot?**
+> Micrometer is a metrics facade (like SLF4J for logging). It auto-instruments Spring Boot components (HTTP, JPA, caching) and exports metrics to any supported backend (Prometheus, Datadog, CloudWatch) via registry adapters. You add `micrometer-registry-prometheus` and it automatically formats all metrics for Prometheus's `/metrics` endpoint.
+
+**Q: What happens if Prometheus goes down?**
+> Metrics collection stops but the application is unaffected (pull model). When Prometheus restarts, it resumes scraping but there will be a gap in the time series data. For critical monitoring, you'd run Prometheus in HA mode with two instances scraping the same targets.</content>
 <parameter name="filePath">/Users/Admin/Developer/Projects/url-shortener/interview-prep.md
